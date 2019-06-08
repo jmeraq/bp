@@ -1,0 +1,46 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: demo-deployment-microservice-bp
+  namespace: demo
+spec:
+  replicas: 2
+  revisionHistoryLimit: 5
+  minReadySeconds: 60
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  progressDeadlineSeconds: 300
+  template:
+    metadata:
+      labels:
+        environment: demo
+        app: demo-microservice-bp
+    spec:
+      containers:
+        - name: demo-microservice-bp
+          image: jmeraq/microservice-bp:latesd
+          imagePullPolicy: Always
+          resources:
+            requests:
+              cpu: 200m
+              memory: 0.5Gi
+            limits:
+              cpu: "1"
+              memory: 1Gi
+          ports:
+            - name: http-port
+              containerPort: 80
+          env:
+            - name: ENVIRONMENT
+              valueFrom:
+                secretKeyRef:
+                  name: demo-configmap-microservice-bp
+                  key: environment
+            - name: API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: demo-secret-microservice-bp
+                  key: api.key
