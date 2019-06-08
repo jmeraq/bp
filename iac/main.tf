@@ -47,6 +47,13 @@ resource "aws_security_group" "sg" {
     cidr_blocks = "${var.sg_cidr_ingress_ssh}"
   }
 
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
   egress {
     from_port       = 0
     to_port         = 0
@@ -66,10 +73,34 @@ resource "aws_instance" "microservice-bp" {
 
   tags = {
     Environment = "${var.environment}"
-    Name        = "microservices-bp"
+    Name        = "microservice-bp"
   }
 
   depends_on = [
     "aws_security_group.sg"
   ]
+}
+
+
+resource "aws_elb" "microservice-bp-elb" {
+  name               = "microservice-bp-elb"
+  subnets           = ["${module.vpc.public_subnets}"]
+  security_groups   = ["${aws_security_group.sg.id}"]
+
+  listener {
+    instance_port     = 80
+    instance_protocol = "http"
+    lb_port           = 80
+    lb_protocol       = "http"
+  }
+
+  instances                   = ["${element(aws_instance.microservice-bp.*.id, 0)}","${element(aws_instance.microservice-bp.*.id, 1)}"]
+  cross_zone_load_balancing   = true
+  idle_timeout                = 400
+  connection_draining         = true
+  connection_draining_timeout = 400
+
+  tags = {
+    Name = "microservice-bp-elb"
+  }
 }
