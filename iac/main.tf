@@ -8,7 +8,7 @@ module "vpc" {
   version             = "1.66.0"
   source              = "terraform-aws-modules/vpc/aws"
 
-  name                = "microservice-bp-vpc"
+  name                = "${var.environment}-microservice-bp-vpc"
   cidr                = "${var.vpc_cidr}"
 
   azs                 = "${var.vpc_zona_disponibilidad}"
@@ -36,7 +36,7 @@ resource "aws_key_pair" "microservice_bp" {
 }
 
 resource "aws_security_group" "sg" {
-  name        = "microservice-bp"
+  name        = "${var.environment}-microservice-bp"
   description = "Permitir SSH"
   vpc_id      = "${module.vpc.vpc_id}"
 
@@ -73,7 +73,7 @@ resource "aws_instance" "microservice-bp" {
 
   tags = {
     Environment = "${var.environment}"
-    Name        = "microservice-bp"
+    Name        = "${var.environment}-microservice-bp"
   }
 
   depends_on = [
@@ -83,7 +83,7 @@ resource "aws_instance" "microservice-bp" {
 
 
 resource "aws_elb" "microservice-bp-elb" {
-  name               = "microservice-bp-elb"
+  name               = "${var.environment}-microservice-bp-elb"
   subnets           = ["${module.vpc.public_subnets}"]
   security_groups   = ["${aws_security_group.sg.id}"]
 
