@@ -53,6 +53,7 @@ pipeline {
                     sh "cd iac/ && terraform init"
                     sh "cd iac/ && terraform plan"
                     sh "cd iac/ && terraform ${ACTION} -auto-approve"
+                    sh "git status"
                 }
             }
         }
