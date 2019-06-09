@@ -7,6 +7,7 @@ pipeline {
             steps {
 
                 sh "cd iac/"
+                sh "echo $PWD"
                 sh "ls -la"
                 sh 'terraform init'
                 sh 'terraform plan'
