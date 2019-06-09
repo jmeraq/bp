@@ -80,7 +80,7 @@ pipeline {
 
                         touch lastversion.txt
                         echo "${VERSION}" >> lastversion.txt
-                        git add ,
+                        git add .
                         git commit -m "state terraform"
                         git push origin HEAD:${BRANCH}
                     """
