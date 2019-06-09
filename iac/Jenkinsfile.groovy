@@ -62,22 +62,20 @@ pipeline {
                 anyOf { branch 'master' }
             }
             steps {
-                container('tools'){
-                    withCredentials(bindings: [sshUserPrivateKey(credentialsId: 'github_private_key', keyFileVariable: 'github_jenkins_key', usernameVariable: '')]) {
-                        sh """
-                            mkdir /root/.ssh
-                            touch /root/.ssh/known_hosts
-                            touch /root/.ssh/id_rsa
-                            ssh-keyscan github.com >> /root/.ssh/known_hosts
-                            cat $github_jenkins_key >> /root/.ssh/id_rsa
-                            chmod 400 /root/.ssh/id_rsa
-                            git remote set-url origin git@github.com:${IMAGE_OWNER}/${REPOSITORY_BASE_NAME}.git
-                            git config --global user.email "jenkins@detic.ec"
-                            git config --global user.name "Jenkins"
-                            git tag -a "${VERSION}" -m "${VERSION}"
-                            git push origin "${VERSION}"
-                        """
-                    }
+                withCredentials(bindings: [sshUserPrivateKey(credentialsId: 'github_private_key', keyFileVariable: 'github_jenkins_key', usernameVariable: '')]) {
+                    sh """
+                        mkdir /root/.ssh
+                        touch /root/.ssh/known_hosts
+                        touch /root/.ssh/id_rsa
+                        ssh-keyscan github.com >> /root/.ssh/known_hosts
+                        cat $github_jenkins_key >> /root/.ssh/id_rsa
+                        chmod 400 /root/.ssh/id_rsa
+                        git remote set-url origin git@github.com:${IMAGE_OWNER}/${REPOSITORY_BASE_NAME}.git
+                        git config --global user.email "jenkins@detic.ec"
+                        git config --global user.name "Jenkins"
+                        git tag -a "${VERSION}" -m "${VERSION}"
+                        git push origin "${VERSION}"
+                    """
                 }
             }
         }
