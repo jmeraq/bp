@@ -6,7 +6,7 @@ pipeline {
         stage('Test') {
             steps {
 
-                sh "/bin/bash -c 'cd iac/'"
+                sh "cd iac/ && la -la"
                 sh "echo $PWD"
                 sh "ls -la"
                 sleep 600
