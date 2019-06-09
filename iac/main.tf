@@ -1,3 +1,14 @@
+terraform {
+  required_version = ">= 0.11.14"
+
+  backend "s3" {
+    encrypt     = true
+    bucket      = "terraform-remote-state-bp"
+    region      = "us-east-1"
+    key         = "terraform.tfstate"
+  }
+}
+
 provider "aws" {
   version                    = ">= 2.6.0"
   skip_requesting_account_id = true
@@ -8,7 +19,7 @@ module "vpc" {
   version             = "1.66.0"
   source              = "terraform-aws-modules/vpc/aws"
 
-  name                = "${var.environment}-microservice-bp-vpc"
+  name                = "${terraform.workspace}-microservice-bp-vpc"
   cidr                = "${var.vpc_cidr}"
 
   azs                 = "${var.vpc_zona_disponibilidad}"
@@ -36,7 +47,7 @@ resource "aws_key_pair" "microservice_bp" {
 }
 
 resource "aws_security_group" "sg" {
-  name        = "${var.environment}-microservice-bp"
+  name        = "${terraform.workspace}-microservice-bp"
   description = "Permitir SSH"
   vpc_id      = "${module.vpc.vpc_id}"
 
@@ -72,8 +83,8 @@ resource "aws_instance" "microservice-bp" {
   security_groups   = ["${aws_security_group.sg.id}"]
 
   tags = {
-    Environment = "${var.environment}"
-    Name        = "${var.environment}-microservice-bp"
+    Environment = "${terraform.workspace}"
+    Name        = "${terraform.workspace}-microservice-bp"
   }
 
   depends_on = [
@@ -83,7 +94,7 @@ resource "aws_instance" "microservice-bp" {
 
 
 resource "aws_elb" "microservice-bp-elb" {
-  name               = "${var.environment}-microservice-bp-elb"
+  name               = "${terraform.workspace}-microservice-bp-elb"
   subnets           = ["${module.vpc.public_subnets}"]
   security_groups   = ["${aws_security_group.sg.id}"]
 

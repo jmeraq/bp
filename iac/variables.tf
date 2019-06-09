@@ -4,12 +4,6 @@ variable "region" {
   default     = "us-east-1"
 }
 
-variable "environment" {
-  type        = "string"
-  description = "Environment"
-  default     = "production"
-}
-
 ## AWS Instance
 
 variable "aws_instance_type" {
