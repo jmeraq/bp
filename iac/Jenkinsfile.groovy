@@ -58,9 +58,6 @@ pipeline {
         }
 
         stage ('Build: Publish Tag Git') {
-            when {
-                anyOf { branch 'master' }
-            }
             steps {
                 withCredentials(bindings: [sshUserPrivateKey(credentialsId: 'github_private_key', keyFileVariable: 'github_jenkins_key', usernameVariable: '')]) {
                     sh """
