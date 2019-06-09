@@ -55,6 +55,10 @@ pipeline {
                     sh "cd iac/ && terraform ${ACTION} -auto-approve"
                     sh "mkdir testfolder"
                     sh "git status"
+                    sh "git remote -v"
+                    sh "git config --global user.email 'jenkins@detic.ec'"
+                    sh "git config --global user.name 'Jenkins'"
+                    sh "git tag -a '${VERSION}' -m '${VERSION}'"
                     sh "git add . && git commit -m 'test jenkins' && git push"
                 }
             }
