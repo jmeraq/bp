@@ -64,7 +64,6 @@ pipeline {
         stage ('Build: Publish Tag Git') {
             steps {
                 withCredentials([sshUserPrivateKey(credentialsId: "github_private_key", keyFileVariable: 'keyfile')]) {
-                    sh "cat ${keyfile}"
                     sh """
                         mkdir /root/.ssh
                         touch /root/.ssh/known_hosts
@@ -77,12 +76,6 @@ pipeline {
                         git config --global user.name "Jenkins"
                         git tag -a "${VERSION}" -m "${VERSION}"
                         git push origin "${VERSION}"
-
-                        touch lastversion.txt
-                        echo "${VERSION}" >> lastversion.txt
-                        git add .
-                        git commit -m "state terraform"
-                        git push origin HEAD:${BRANCH}
                     """
                }
             }
