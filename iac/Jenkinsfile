@@ -6,7 +6,11 @@ pipeline {
         stage('Test') {
             steps {
                 withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws_credential', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
-                    sh "cd iac/ && terraform init && terraform plan"
+                    sh "cd iac/ && terraform init"
+                    sh "cd iac/ && terraform plan"
+                    sh "cd iac/ && terraform apply"
+                    sleep 30
+                    sh "cd iac/ && terraform detroy"
                 }
             }
         }
