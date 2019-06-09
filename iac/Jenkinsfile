@@ -37,7 +37,7 @@ pipeline {
                                 ACTION      = input id: 'Environment-deployment',
                                         message: 'Que deseas realizar?',
                                         ok: 'OK',
-                                        parameters: [[$class: 'ChoiceParameterDefinition', choices: ['apply', 'destroy'], description: 'Selecionar accion que desea realizar', name: 'Environment']]
+                                        parameters: [[$class: 'ChoiceParameterDefinition', choices: ['apply', 'destroy'], description: 'Selecionar accion que desea realizar', name: 'Action']]
                                 if (env.BRANCH_NAME == 'master') {
                                     ENVIRONMENT = "production"
                                     VERSION     = "${ENVIRONMENT}-${VERSION}"
