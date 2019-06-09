@@ -5,8 +5,9 @@ pipeline {
     stages {
         stage('Test') {
             steps {
-                sh 'terraform --version'
-                sh 'aws --version'
+                sh "cd $WORKSPACE/iac"
+                sh 'terraform init'
+                sh 'terraform plan'
             }
         }
     }
