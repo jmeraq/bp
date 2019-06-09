@@ -62,18 +62,6 @@ pipeline {
 
         stage ('Build: Publish Tag Git') {
             steps {
-                /*sh "ls -la && whoami"
-                sh "mkdir /home/jenkins/github/"
-                sh "cp -r ./ /home/jenkins/github/"
-                sh "git remote set-url origin git@github.com:${IMAGE_OWNER}/${REPOSITORY_BASE_NAME}.git"
-                sh "cd /home/jenkins/github/ && touch test.php && ls -la"
-                sh "cd /home/jenkins/github/ && git remote -v"
-                sh "cd /home/jenkins/github/ && git config --global user.email 'jenkins@detic.ec'"
-                sh "cd /home/jenkins/github/ && git config --global user.name 'Jenkins'"
-                sh "cd /home/jenkins/github/ && git tag -a '${VERSION}' -m '${VERSION}'"
-                sh "cd /home/jenkins/github/ && git add ."
-                sh "cd /home/jenkins/github/ && git commit -m 'test jenkins'"
-                sh "cd /home/jenkins/github/ && git push origin HEAD:iac"*/
                 withCredentials([sshUserPrivateKey(credentialsId: "github_private_key", keyFileVariable: 'keyfile')]) {
                     sh "cat ${keyfile}"
                     sh """
@@ -86,6 +74,8 @@ pipeline {
                         git remote set-url origin git@github.com:${IMAGE_OWNER}/${REPOSITORY_BASE_NAME}.git
                         git config --global user.email "jenkins@detic.ec"
                         git config --global user.name "Jenkins"
+                        git add .
+                        git commit -m 'state terraform jenkins'
                         git tag -a "${VERSION}" -m "${VERSION}"
                         git push origin "${VERSION}"
                     """
