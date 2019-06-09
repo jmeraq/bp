@@ -65,7 +65,7 @@ pipeline {
                 sh "ls -la && whoami"
                 sh "mkdir /home/jenkins/github/"
                 sh "cp -r ./ /home/jenkins/github/"
-                sh "cd /home/jenkins/github/ && ls -la"
+                sh "cd /home/jenkins/github/ && mkdir && foldertest && ls -la"
                 sh "cd /home/jenkins/github/ && git remote -v"
                 sh "cd /home/jenkins/github/ && git config --global user.email 'jenkins@detic.ec'"
                 sh "cd /home/jenkins/github/ && git config --global user.name 'Jenkins'"
