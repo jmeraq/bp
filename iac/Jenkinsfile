@@ -6,7 +6,7 @@ pipeline {
         stage('Test') {
             steps {
 
-                sh "cd iac/"
+                sh "cd /home/jenkins/"
                 sh "echo $PWD"
                 sh "ls -la"
                 sh 'terraform init'
