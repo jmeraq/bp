@@ -5,14 +5,7 @@ pipeline {
     stages {
         stage('Test') {
             steps {
-
-                sh "cd iac/ && ls -la"
-                sh "echo $PWD"
-                sh "ls -la"
-                sleep 600
-
-                sh 'terraform init'
-                sh 'terraform plan'
+                sh "cd iac/ && terraform init && terraform plan"
             }
         }
     }
