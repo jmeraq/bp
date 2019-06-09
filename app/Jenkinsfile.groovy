@@ -1,0 +1,86 @@
+pipeline {
+    agent {
+        docker {
+            image 'jmeraq/tools:latest'
+             args '-u root:root'
+        }
+    }
+
+    environment {
+        CI = 'true'
+        IMAGE_OWNER          = "jmeraq"
+        REPOSITORY_BASE_NAME = """${sh(
+                returnStdout: true,
+                script: 'git config --get remote.origin.url | cut -d "/" -f 5 | cut -d "." -f 1 | tr -d \'[[:space:]]\'').trim()}"""
+    }
+
+
+    stages {
+        stage('Init'){
+            stages{
+                stage('Init: Confirm Deploy to Producction') {
+                    when {
+                        anyOf { branch 'master' }
+                    }
+                    steps {
+                        timeout(time: 5, unit: 'MINUTES') {
+                            input "Really want to deploy to production?"
+                        }
+                    }
+                }
+                stage('Init: Define Version and Variables') {
+                    steps {
+                        timeout(time: 5, unit: 'MINUTES') {
+                            script {
+                                VERSION     = new Date().format( 'yyyy.MM.dd.H.m.s' )
+                                if (env.BRANCH_NAME == 'master') {
+                                    ENVIRONMENT = "production"
+                                    VERSION     = "${ENVIRONMENT}-${VERSION}"
+                                } else {
+                                    ENVIRONMENT = "demo"
+                                    VERSION     = "${ENVIRONMENT}-${VERSION}"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Test: Execute test'){
+            steps{
+                script{
+                    def words = new File('words.txt') as String[]
+                    println words
+                }
+            }
+        }
+        /*stage('Build: Execute Action') {
+            steps {
+                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws_credential', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
+
+                }
+            }
+        }*/
+
+        /*stage ('Build: Publish Tag Git') {
+            steps {
+                withCredentials([sshUserPrivateKey(credentialsId: "github_private_key", keyFileVariable: 'keyfile')]) {
+                    sh """
+                        mkdir /root/.ssh
+                        touch /root/.ssh/known_hosts
+                        touch /root/.ssh/id_rsa
+                        ssh-keyscan github.com >> /root/.ssh/known_hosts
+                        cat ${keyfile} >> /root/.ssh/id_rsa
+                        chmod 400 /root/.ssh/id_rsa
+                        git remote set-url origin git@github.com:${IMAGE_OWNER}/${REPOSITORY_BASE_NAME}.git
+                        git config --global user.email "jenkins@detic.ec"
+                        git config --global user.name "Jenkins"
+                        git tag -a "microservice-bp-${VERSION}" -m "microservice-bp-${VERSION}"
+                        git push origin "${VERSION}"
+                    """
+               }
+            }
+        }*/
+    }
+}

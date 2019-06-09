@@ -33,7 +33,6 @@ pipeline {
                         timeout(time: 5, unit: 'MINUTES') {
                             script {
                                 VERSION     = new Date().format( 'yyyy.MM.dd.H.m.s' )
-                                BRANCH      = env.BRANCH_NAME
                                 ACTION      = input id: 'Environment-deployment',
                                         message: 'Que deseas realizar?',
                                         ok: 'OK',
@@ -75,7 +74,7 @@ pipeline {
                         git remote set-url origin git@github.com:${IMAGE_OWNER}/${REPOSITORY_BASE_NAME}.git
                         git config --global user.email "jenkins@detic.ec"
                         git config --global user.name "Jenkins"
-                        git tag -a "${VERSION}" -m "${VERSION}"
+                        git tag -a "iac-${VERSION}" -m "iac-${VERSION}"
                         git push origin "${VERSION}"
                     """
                }
