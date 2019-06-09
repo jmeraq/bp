@@ -66,6 +66,10 @@ pipeline {
                 sh "mkdir /home/jenkins/github/"
                 sh "cp -r ./ /home/jenkins/github/"
                 sh "cd /home/jenkins/github/ && ls -la"
+                sh "cd /home/jenkins/github/ && git config --global user.email 'jenkins@detic.ec'"
+                sh "cd /home/jenkins/github/ && git config --global user.name 'Jenkins'"
+                sh "cd /home/jenkins/github/ && git tag -a '${VERSION}' -m '${VERSION}'"
+                sh "cd /home/jenkins/github/ && git add . && git commit -m 'test jenkins' && git push"
                 /*withCredentials(bindings: [sshUserPrivateKey(credentialsId: 'github_private_key', keyFileVariable: 'github_jenkins_key', usernameVariable: '')]) {
                     sh """
                         mkdir /root/.ssh
