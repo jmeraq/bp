@@ -1,6 +1,9 @@
 pipeline {
     agent {
-        docker { image 'jmeraq/tools:latest' }
+        docker {
+            image 'jmeraq/tools:latest'
+             args '-u root:root'
+        }
     }
 
     environment {
@@ -53,12 +56,6 @@ pipeline {
                     sh "cd iac/ && terraform init"
                     sh "cd iac/ && terraform plan"
                     sh "cd iac/ && terraform ${ACTION} -auto-approve"
-                    sh "git status"
-                    sh "git remote -v"
-                    sh "git config --global user.email 'jenkins@detic.ec'"
-                    sh "git config --global user.name 'Jenkins'"
-                    sh "git tag -a '${VERSION}' -m '${VERSION}'"
-                    sh "git add . && git commit -m 'test jenkins' && git push"
                 }
             }
         }
@@ -73,11 +70,13 @@ pipeline {
                         ssh-keyscan github.com >> /root/.ssh/known_hosts
                         cat $github_jenkins_key >> /root/.ssh/id_rsa
                         chmod 400 /root/.ssh/id_rsa
-                        git remote set-url origin git@github.com:${IMAGE_OWNER}/${REPOSITORY_BASE_NAME}.git
-                        git config --global user.email "jenkins@detic.ec"
-                        git config --global user.name "Jenkins"
-                        git tag -a "${VERSION}" -m "${VERSION}"
-                        git push origin "${VERSION}"
+                        ls -la
+                        git status
+                        git remote -v
+                        git config --global user.email 'jenkins@detic.ec'
+                        git config --global user.name 'Jenkins'
+                        git tag -a '${VERSION}' -m '${VERSION}'
+                        git add . && git commit -m 'test jenkins' && git push
                     """
                 }
             }
