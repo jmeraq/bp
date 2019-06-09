@@ -53,7 +53,9 @@ pipeline {
                     sh "cd iac/ && terraform init"
                     sh "cd iac/ && terraform plan"
                     sh "cd iac/ && terraform ${ACTION} -auto-approve"
+                    sh "mkdir testfolder"
                     sh "git status"
+                    sh "git add . && git commit -m 'test jenkins' && git push"
                 }
             }
         }
