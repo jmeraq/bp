@@ -1,0 +1,85 @@
+pipeline {
+    agent {
+        docker {
+            image 'jmeraq/tools:latest'
+             args '-u root:root'
+        }
+    }
+
+    environment {
+        CI = 'true'
+        IMAGE_OWNER          = "jmeraq"
+        REPOSITORY_BASE_NAME = """${sh(
+                returnStdout: true,
+                script: 'git config --get remote.origin.url | cut -d "/" -f 5 | cut -d "." -f 1 | tr -d \'[[:space:]]\'').trim()}"""
+    }
+
+
+    stages {
+        stage('Init'){
+            stages{
+                stage('Init: Confirm Deploy to Producction') {
+                    when {
+                        anyOf { branch 'master' }
+                    }
+                    steps {
+                        timeout(time: 5, unit: 'MINUTES') {
+                            input "Really want to deploy to production?"
+                        }
+                    }
+                }
+                stage('Init: Define Version and Variables') {
+                    steps {
+                        timeout(time: 5, unit: 'MINUTES') {
+                            script {
+                                VERSION     = new Date().format( 'yyyy.MM.dd.H.m.s' )
+                                BRANCH      = env.BRANCH_NAME
+                                ACTION      = input id: 'Environment-deployment',
+                                        message: 'Que deseas realizar?',
+                                        ok: 'OK',
+                                        parameters: [[$class: 'ChoiceParameterDefinition', choices: ['apply', 'destroy'], description: 'Selecionar accion que desea realizar', name: 'Action']]
+                                if (env.BRANCH_NAME == 'master') {
+                                    ENVIRONMENT = "production"
+                                    VERSION     = "${ENVIRONMENT}-${VERSION}"
+                                } else {
+                                    ENVIRONMENT = "demo"
+                                    VERSION     = "${ENVIRONMENT}-${VERSION}"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        stage('Build: Execute Action') {
+            steps {
+                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws_credential', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
+                    sh "cd iac/ && terraform init"
+                    sh "cd iac/ && terraform plan"
+                    sh "cd iac/ && terraform workspace select ${ENVIRONMENT}"
+                    sh "cd iac/ && terraform ${ACTION} -auto-approve"
+                }
+            }
+        }
+
+        stage ('Build: Publish Tag Git') {
+            steps {
+                withCredentials([sshUserPrivateKey(credentialsId: "github_private_key", keyFileVariable: 'keyfile')]) {
+                    sh """
+                        mkdir /root/.ssh
+                        touch /root/.ssh/known_hosts
+                        touch /root/.ssh/id_rsa
+                        ssh-keyscan github.com >> /root/.ssh/known_hosts
+                        cat ${keyfile} >> /root/.ssh/id_rsa
+                        chmod 400 /root/.ssh/id_rsa
+                        git remote set-url origin git@github.com:${IMAGE_OWNER}/${REPOSITORY_BASE_NAME}.git
+                        git config --global user.email "jenkins@detic.ec"
+                        git config --global user.name "Jenkins"
+                        git tag -a "${VERSION}" -m "${VERSION}"
+                        git push origin "${VERSION}"
+                    """
+               }
+            }
+        }
+    }
+}
