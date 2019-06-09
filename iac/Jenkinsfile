@@ -8,6 +8,7 @@ pipeline {
 
                 sh "cd /home/jenkins/"
                 sh "echo $PWD"
+                sleep 5
                 sh "ls -la"
                 sh 'terraform init'
                 sh 'terraform plan'
