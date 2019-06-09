@@ -62,9 +62,9 @@ pipeline {
 
         stage ('Build: Publish Tag Git') {
             steps {
-                sh "ls -la"
+                sh "ls -la && whoami"
                 sh "mkdir /home/jenkins/github/"
-                sh "cp ./ /home/jenkins/github/"
+                sh "cp -r ./ /home/jenkins/github/"
                 sh "cd /home/jenkins/github/ && ls -la"
                 /*withCredentials(bindings: [sshUserPrivateKey(credentialsId: 'github_private_key', keyFileVariable: 'github_jenkins_key', usernameVariable: '')]) {
                     sh """
