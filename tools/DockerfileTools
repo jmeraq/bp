@@ -1,0 +1,58 @@
+FROM ubuntu:18.04
+
+# Variables de entorno
+# ENV JENKINS_HOME /home/jenkins
+#ENV LANG C.UTF-8
+#ENV JAVA_HOME "/usr/lib/jvm/java-8-oracle"
+
+# Add User Jenkins
+RUN mkdir -p /home/jenkins
+# Directorio de trabajo
+# WORKDIR /home/jenkins
+
+# Paquetes basicos
+RUN apt-get update \
+    && apt-get --no-install-recommends install -y \
+        curl \
+       # software-properties-common \
+        apt-transport-https \
+        ca-certificates \
+        openssh-client \
+        dnsutils \
+        gnupg \
+        git \
+        python-pip \
+        python3-pip \
+        python-setuptools \
+        unzip \
+        wget \
+    && apt-get autoremove \
+    && apt-get purge \
+    && apt-get clean \
+    && pip install --upgrade awscli \
+    && rm -rf /var/lib/apt/lists/*
+
+# Añadir repositorios
+RUN curl -sL https://deb.nodesource.com/setup_8.x | bash - \
+    && curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add - \
+    && curl -L "https://github.com/docker/compose/releases/download/1.22.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose \
+    && apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys EEA14886 \
+    && apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 642AC823 \
+    && echo "deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable" | tee /etc/apt/sources.list.d/docker.list \
+    && wget https://releases.hashicorp.com/terraform/0.11.14/terraform_0.11.14_linux_amd64.zip
+
+# Instalaciones
+RUN apt-get update -y \
+    && apt-get install --no-install-recommends -y \
+        docker-ce \
+    && unzip terraform_0.11.14_linux_amd64.zip \
+    && mv ./terraform /usr/local/bin/terraform \
+    && terraform --version \
+    && curl -LO https://storage.googleapis.com/kubernetes-release/release/v1.7.0/bin/linux/amd64/kubectl \
+    && chmod +x ./kubectl \
+    && mv ./kubectl /usr/local/bin/kubectl \
+    && chmod +x /usr/local/bin/docker-compose \
+    && apt-get autoremove \
+    && apt-get purge \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
