@@ -6,7 +6,7 @@ pipeline {
         stage('Test') {
             steps {
 
-                sh "cd /home/jenkins/"
+                sh "/bin/bash -c 'cd iac/'"
                 sh "echo $PWD"
                 sleep 600
                 sh "ls -la"
