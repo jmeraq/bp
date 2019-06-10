@@ -55,7 +55,7 @@ pipeline {
             }
             steps{
                 sh "cp -r app/ /go/src/microservice-bp"
-                sh "cd /go/src/microservice-bp && go test -v"
+                sh "cd /go/src/microservice-bp && go get -d -v ./... && go test -v"
             }
         }
 
