@@ -80,7 +80,7 @@ func handleRequests()  {
 	router.HandleFunc("/DevOps",responseMessage).Methods("post")
 	router.HandleFunc("/DevOps",errorPage).Methods("get","delete","put","patch")
 	router.Use(tokenMiddleware)
-	log.Fatal(http.ListenAndServe(":8081", router))
+	log.Fatal(http.ListenAndServe(":80", router))
 }
 
 func main(){
