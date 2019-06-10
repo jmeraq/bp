@@ -75,7 +75,7 @@ pipeline {
                         git config --global user.email "jenkins@detic.ec"
                         git config --global user.name "Jenkins"
                         git tag -a "iac-${VERSION}" -m "iac-${VERSION}"
-                        git push origin "${VERSION}"
+                        git push origin "iac-${VERSION}"
                     """
                }
             }
