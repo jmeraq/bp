@@ -1,5 +1,5 @@
 #!/bin/bash
-input="ips.txt"
+input="app/ips.txt"
 while IFS= read -r line
 do
   ssh -i "/home/jmeraq/.ssh/id_rsa" ubuntu@"$line" "sudo docker pull jmeraq/microservice-bp:$1"
