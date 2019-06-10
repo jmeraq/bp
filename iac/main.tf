@@ -3,8 +3,8 @@ terraform {
 
   backend "s3" {
     encrypt     = true
-    bucket      = "${var.bucket_name}"
-    region      = "${var.region}"
+    bucket      = "terraform-remote-state-bp"
+    region      = "us-east-1"
     key         = "terraform.tfstate"
   }
 }

@@ -17,7 +17,8 @@ Esta sera la clave publica que se agregara a las instancias EC2.
 * El repositorio github debe contener tambien la clave publica generado en el paso uno, para poder realizar los TAGS.
 * Agregar en el Jenkins la clave privada generada en el paso uno, con el ID microservice_bp_private_key.
 * Agregar al Jenkins las AWS Credentials con los permisos adecuados con el ID aws_credential.
-* Se debe crear en AWS S3 un bucket con el nombre que desee para almacenar el estado del IAC, el nombre del bucket debe ser editado en la variable bucket_name en iac/variables.tf
+* Se debe crear en AWS S3 un bucket con el nombre que desee para almacenar el estado del IAC, el nombre del bucket debe ser editado en iac/main.tf
+* Se debe crear dos workspaces uno llamado demo y otro production.
 
 Luego de realizar los pasos anteriores solo queda desplegar el Jenkinsfile.
 
