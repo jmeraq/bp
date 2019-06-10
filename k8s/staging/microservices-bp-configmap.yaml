@@ -1,7 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: staging-configmap-microservice-bp
-  namespace: staging
-data:
-  environment: "staging"
