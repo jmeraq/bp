@@ -97,7 +97,7 @@ pipeline {
                     git config --global user.email "jenkins@detic.ec"
                     git config --global user.name "Jenkins"
                     git tag -a "microservice-bp-${VERSION}" -m "microservice-bp-${VERSION}"
-                    git push origin "${VERSION}"
+                    git push origin "microservice-bp-${VERSION}"
                 """
             }
         }
