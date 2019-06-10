@@ -80,7 +80,7 @@ pipeline {
             }
         }
 
-        stage ('Deploy: Publish Tag Git') {
+        stage ('Deploy: Depoly Microservice') {
             steps {
                 sh """
                     chmod 777 -R app/deploy.sh
