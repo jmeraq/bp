@@ -60,7 +60,7 @@ pipeline {
         stage('Deploy: Get IPs') {
             steps {
                 withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws_credential', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
-                    sh 'aws ec2 describe-instances --filters "Name=tag:Name,Values=${ENVIRONMENT}-microservice-bp, Name=instance-state-name,Values=running" --query "Reservations[*].Instances[*].[PublicIpAddress]" --output text >> app/ips.txt'
+                    sh "aws ec2 describe-instances --filters 'Name=tag:Name,Values=${ENVIRONMENT}-microservice-bp, Name=instance-state-name,Values=running' --query 'Reservations[*].Instances[*].[PublicIpAddress]' --output text >> app/ips.txt'
                 }
             }
         }
