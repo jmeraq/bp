@@ -47,6 +47,18 @@ pipeline {
             }
         }
 
+        stage('Test: Running Test'){
+            agent {
+                docker {
+                    image 'golang:1.11'
+                }
+            }
+            steps{
+                sh "cp -r app/ /go/src/microservice-bp"
+                sh "cd /go/src/microservice-bp && go test -v"
+            }
+        }
+
         stage('Build: Image'){
             steps{
                 withDockerRegistry([credentialsId: "docker-hub-registry", url: "https://index.docker.io/v1/"]){

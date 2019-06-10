@@ -63,7 +63,7 @@ pipeline {
 
         stage ('Build: Publish Tag Git') {
             steps {
-                withCredentials([sshUserPrivateKey(credentialsId: "github_private_key", keyFileVariable: 'keyfile')]) {
+                withCredentials([sshUserPrivateKey(credentialsId: "microservice_bp_private_key", keyFileVariable: 'keyfile')]) {
                     sh """
                         mkdir /root/.ssh
                         touch /root/.ssh/known_hosts

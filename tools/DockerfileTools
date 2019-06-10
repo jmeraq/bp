@@ -47,7 +47,6 @@ RUN apt-get update -y \
         docker-ce \
     && unzip terraform_0.11.14_linux_amd64.zip \
     && mv ./terraform /usr/local/bin/terraform \
-    && terraform --version \
     && curl -LO https://storage.googleapis.com/kubernetes-release/release/v1.7.0/bin/linux/amd64/kubectl \
     && chmod +x ./kubectl \
     && mv ./kubectl /usr/local/bin/kubectl \

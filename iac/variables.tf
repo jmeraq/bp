@@ -9,7 +9,7 @@ variable "region" {
 variable "aws_instance_type" {
   type        = "string"
   description = "Instance Type"
-  default     = "t3.micro"
+  default     = "t2.micro"
 }
 
 variable "aws_instance_ami" {
@@ -20,7 +20,7 @@ variable "aws_instance_ami" {
 
 variable "aws_instance_count" {
   type        = "string"
-  description = "Instance ami"
+  description = "Instance Number"
   default     = "2"
 }
 
