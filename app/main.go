@@ -75,8 +75,18 @@ func errorPage(w http.ResponseWriter, r *http.Request){
 	fmt.Println(err)
 }
 
+func responseHome(w http.ResponseWriter, r *http.Request){
+	response := ResponseMessage{Message: "Esta es la Home, el endpoint que buscar id /DevOps"}
+	w.WriteHeader(http.StatusOK)
+	err := json.NewEncoder(w).Encode(response)
+	if err != nil {
+	  fmt.Println(err)
+	}
+}
+
 func handleRequests()  {
 	router := mux.NewRouter().StrictSlash(true)
+	router.HandleFunc("/",responseHome)
 	router.HandleFunc("/DevOps",responseMessage).Methods("post")
 	router.HandleFunc("/DevOps",errorPage).Methods("get","delete","put","patch")
 	router.Use(tokenMiddleware)
