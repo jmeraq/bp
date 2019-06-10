@@ -20,7 +20,8 @@ Esta sera la clave publica que se agregara a las instancias EC2.
 * Se debe crear en AWS S3 un bucket con el nombre que desee para almacenar el estado del IAC, el nombre del bucket debe ser editado en iac/main.tf
 * Se debe crear dos workspaces uno llamado demo y otro production.
 
-Luego de realizar los pasos anteriores solo queda desplegar el Jenkinsfile.
+Luego de realizar los pasos anteriores solo queda desplegar el Jenkinsfile, vale destacar que al final de la
+ejecucion del terraform apply aparece el endpoint del balanceador que permite acceder a los microservicios.
 
 ## APP
 Ademas de los pasos anteriores se deben ejecutar los siguientes:
