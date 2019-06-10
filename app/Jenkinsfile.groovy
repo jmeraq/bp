@@ -85,7 +85,7 @@ pipeline {
             steps {
                 sh """
                     chmod 777 -R app/deploy.sh
-                    ./app/deploy.sh
+                    ./app/deploy.sh ${VERSION}
                 """
             }
         }
