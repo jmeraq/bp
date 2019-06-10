@@ -2,7 +2,7 @@ pipeline {
     agent {
         docker {
             image 'jmeraq/tools:latest'
-             args '-u root:root'
+            args '-u root:root'
         }
     }
 
@@ -47,25 +47,27 @@ pipeline {
             }
         }
 
-        stage('Test: Execute test'){
+        stage('Build: Image'){
             steps{
-                script{
-                    def words = new File('words.txt') as String[]
-                    println words
+                withDockerRegistry([credentialsId: "docker-hub-registry", url: "https://index.docker.io/v1/"]){
+                    sh "docker build -t ${IMAGE_OWNER}/microservice-bp:${VERSION} -f app/Dockerfile ."
+                    sh "docker push ${IMAGE_OWNER}/microservice-bp:${VERSION}"
+                    sh "docker rmi ${IMAGE_OWNER}/microservice-bp:${VERSION}"
                 }
             }
         }
-        /*stage('Build: Execute Action') {
+
+        stage('Deploy: Get IPs') {
             steps {
                 withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws_credential', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
-
+                    aws ec2 describe-instances --filters "Name=tag:Name,Values=${ENVIRONMENT}-microservice-bp, Name=instance-state-name,Values=running" --query 'Reservations[*].Instances[*].[PublicIpAddress]' --output text >> app/ips.txt
                 }
             }
-        }*/
+        }
 
-        /*stage ('Build: Publish Tag Git') {
-            steps {
-                withCredentials([sshUserPrivateKey(credentialsId: "github_private_key", keyFileVariable: 'keyfile')]) {
+        stage('Config: SSH'){
+            steps{
+                withCredentials([sshUserPrivateKey(credentialsId: "microservice_bp_private_key", keyFileVariable: 'keyfile')]) {
                     sh """
                         mkdir /root/.ssh
                         touch /root/.ssh/known_hosts
@@ -73,14 +75,30 @@ pipeline {
                         ssh-keyscan github.com >> /root/.ssh/known_hosts
                         cat ${keyfile} >> /root/.ssh/id_rsa
                         chmod 400 /root/.ssh/id_rsa
-                        git remote set-url origin git@github.com:${IMAGE_OWNER}/${REPOSITORY_BASE_NAME}.git
-                        git config --global user.email "jenkins@detic.ec"
-                        git config --global user.name "Jenkins"
-                        git tag -a "microservice-bp-${VERSION}" -m "microservice-bp-${VERSION}"
-                        git push origin "${VERSION}"
                     """
-               }
+                }
             }
-        }*/
+        }
+
+        stage ('Deploy: Publish Tag Git') {
+            steps {
+                sh """
+                    chmod 777 -R app/deploy.sh
+                    ./app/deploy.sh
+                """
+            }
+        }
+
+        stage ('Deploy: Publish Tag Git') {
+            steps {
+                sh """
+                    git remote set-url origin git@github.com:${IMAGE_OWNER}/${REPOSITORY_BASE_NAME}.git
+                    git config --global user.email "jenkins@detic.ec"
+                    git config --global user.name "Jenkins"
+                    git tag -a "microservice-bp-${VERSION}" -m "microservice-bp-${VERSION}"
+                    git push origin "${VERSION}"
+                """
+            }
+        }
     }
 }
